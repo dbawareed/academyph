@@ -3,237 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مستكشف الأوزان في الفضاء</title>
-    <!-- استخدام Tailwind CSS للتصميم -->
+    <title>بناء نظرية علمية - الجاذبية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- استدعاء خط جوجل (Cairo) لدعم اللغة العربية بشكل جميل -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0f172a;
-            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
-            overflow-x: hidden;
+            background-color: #f0f9ff;
         }
-
-        /* مؤثرات النجوم في الخلفية */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* حركة القفز التفاعلية بناءً على الجاذبية */
-        :root {
-            --jump-height: -50px;
-            --jump-duration: 0.5s;
-        }
-
-        @keyframes jumpAnim {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(var(--jump-height)); }
-        }
-
-        .jumping {
-            animation: jumpAnim var(--jump-duration) ease-out;
-        }
-
-        /* تصميم الكواكب */
-        .planet-btn {
+        .step-card {
             transition: all 0.3s ease;
         }
-        .planet-btn:hover {
-            transform: scale(1.1);
+        .step-card.active {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+            transform: translateY(-5px);
         }
-        .planet-btn.active {
-            transform: scale(1.15);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            border-color: white;
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(200px); }
         }
-
-        .astronaut-container {
-            position: relative;
-            height: 300px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            border-bottom: 4px solid #334155;
-            margin-top: 2rem;
-        }
-
-        .astronaut {
-            font-size: 5rem;
-            line-height: 1;
-            margin-bottom: 10px;
-            text-shadow: 0 10px 15px rgba(0,0,0,0.5);
+        .animate-fall {
+            animation: fall 1s cubic-bezier(.45, .05, .55, .95) forwards;
         }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col items-center py-10 px-4 relative">
+<body class="text-slate-800">
 
-    <!-- خلفية النجوم (للزينة) -->
-    <div class="stars text-white text-opacity-20 text-xs font-mono p-4" aria-hidden="true">
-        ✦ &nbsp;&nbsp;&nbsp; ⋆ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✦ <br><br><br>
-        &nbsp;&nbsp;&nbsp;&nbsp; ⋆ &nbsp;&nbsp;&nbsp; ✦ <br><br>
-        &nbsp;&nbsp; ✦ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ⋆
-    </div>
+    <header class="bg-blue-600 text-white py-8 px-4 shadow-lg text-center">
+        <h1 class="text-3xl md:text-5xl font-black mb-2">كيف تُبنى النظرية العلمية؟ 🧪</h1>
+        <p class="text-xl opacity-90">مثال تطبيقي: اكتشاف الجاذبية</p>
+    </header>
 
-    <!-- المحتوى الرئيسي -->
-    <div class="z-10 w-full max-w-3xl bg-slate-800 bg-opacity-80 backdrop-blur-md rounded-3xl shadow-2xl p-6 md:p-10 border border-slate-700">
+    <main class="max-w-4xl mx-auto py-10 px-4">
         
-        <h1 class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-500 mb-4">
-            🚀 مستكشف الفضاء
-        </h1>
-        <p class="text-center text-slate-300 mb-8 text-lg">
-            هل تساءلت يوماً كم سيكون وزنك لو سافرت إلى كوكب آخر؟ أدخل وزنك واكتشف!
-        </p>
-
-        <!-- صندوق إدخال الوزن -->
-        <div class="flex flex-col items-center mb-10">
-            <label for="earthWeight" class="text-xl font-bold mb-3 text-sky-300">أدخل وزنك على الأرض (كيلوجرام):</label>
-            <input type="number" id="earthWeight" value="30" min="1" max="200" 
-                class="w-48 text-center text-3xl font-bold p-3 rounded-2xl bg-slate-900 border-2 border-sky-500 text-white focus:outline-none focus:ring-4 focus:ring-sky-500 transition-all">
-        </div>
-
-        <!-- أزرار الكواكب -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            <button onclick="selectPlanet('earth')" id="btn-earth" class="planet-btn active bg-blue-900 border-2 border-blue-500 rounded-2xl p-4 flex flex-col items-center gap-2">
-                <span class="text-4xl">🌍</span>
-                <span class="font-bold">الأرض</span>
-            </button>
-            
-            <button onclick="selectPlanet('moon')" id="btn-moon" class="planet-btn bg-gray-700 border-2 border-gray-500 rounded-2xl p-4 flex flex-col items-center gap-2">
-                <span class="text-4xl">🌙</span>
-                <span class="font-bold">القمر</span>
-            </button>
-
-            <button onclick="selectPlanet('mars')" id="btn-mars" class="planet-btn bg-red-900 border-2 border-red-500 rounded-2xl p-4 flex flex-col items-center gap-2">
-                <span class="text-4xl">🔴</span>
-                <span class="font-bold">المريخ</span>
-            </button>
-
-            <button onclick="selectPlanet('jupiter')" id="btn-jupiter" class="planet-btn bg-orange-900 border-2 border-orange-500 rounded-2xl p-4 flex flex-col items-center gap-2">
-                <span class="text-4xl">🪐</span>
-                <span class="font-bold">المشتري</span>
-            </button>
-        </div>
-
-        <!-- صندوق النتائج -->
-        <div class="bg-slate-900 rounded-2xl p-6 border border-slate-600 text-center relative overflow-hidden">
-            <h2 class="text-2xl mb-2 text-slate-400">وزنك على <span id="planetNameDisplay" class="font-bold text-white">الأرض</span> سيكون:</h2>
-            <div class="text-5xl md:text-6xl font-black text-yellow-400 mb-4" dir="ltr">
-                <span id="resultWeight">30.0</span> <span class="text-2xl text-slate-400 font-normal">كجم</span>
-            </div>
-            <p id="planetFact" class="text-lg text-sky-200">
-                هذا هو وزنك الطبيعي، قوة جذب الأرض لك تبقيك مستقراً على الأرض!
+        <!-- مقدمة -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-blue-100 mb-8">
+            <h2 class="text-2xl font-bold text-blue-700 mb-4">مرحباً يا بطل! 👋</h2>
+            <p class="text-lg leading-relaxed">
+                العلماء لا يطلقون النظريات صدفة، بل يتبعون طريقاً منظماً يسمى <strong>"المنهج العلمي"</strong>.
+                دعنا نكتشف كيف وصل نيوتن لنظرية الجاذبية من خلال هذه الخطوات.
             </p>
-        </div>
+        </section>
 
-        <!-- منطقة القفز التفاعلية -->
-        <div class="text-center mt-8">
-            <p class="text-lg font-bold mb-2 text-slate-300">اضغط على رائد الفضاء لترى كيف يقفز! 👇</p>
-            <div class="astronaut-container">
-                <div id="astronaut" class="astronaut cursor-pointer" onclick="jump()">👨‍🚀</div>
+        <!-- خطوات المنهج العلمي -->
+        <div class="grid gap-6">
+            
+            <!-- الخطوة 1 -->
+            <div id="step1" class="step-card bg-white rounded-2xl p-6 border-2 border-transparent shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">1</span>
+                    <h3 class="text-xl font-bold">الملاحظة (Observation)</h3>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="text-6xl">🍎</div>
+                    <p class="text-lg">
+                        تبدأ الرحلة بملاحظة شيء ما. يحكى أن "إسحاق نيوتن" لاحظ تفاحة تسقط من الشجرة بدلاً من أن تطير للأعلى أو تذهب جانباً.
+                    </p>
+                </div>
             </div>
+
+            <!-- الخطوة 2 -->
+            <div id="step2" class="step-card bg-white rounded-2xl p-6 border-2 border-transparent shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">2</span>
+                    <h3 class="text-xl font-bold">التساؤل (Question)</h3>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="text-6xl">🤔</div>
+                    <p class="text-lg">
+                        بعد الملاحظة، يأتي السؤال: "لماذا تسقط الأشياء دائماً نحو الأرض؟ هل هناك قوة خفية تسحبها؟"
+                    </p>
+                </div>
+            </div>
+
+            <!-- الخطوة 3 -->
+            <div id="step3" class="step-card bg-white rounded-2xl p-6 border-2 border-transparent shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">3</span>
+                    <h3 class="text-xl font-bold">وضع الفرضية (Hypothesis)</h3>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="text-6xl">💡</div>
+                    <p class="text-lg italic bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                        "ربما تمتلك الأرض قوة جذب تسحب جميع الأجسام نحو مركزها."
+                    </p>
+                </div>
+            </div>
+
+            <!-- الخطوة 4 -->
+            <div id="step4" class="step-card bg-white rounded-2xl p-6 border-2 border-transparent shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">4</span>
+                    <h3 class="text-xl font-bold">التجربة (Experiment)</h3>
+                </div>
+                <p class="text-lg mb-4">لنختبر الفرضية! جرب إسقاط أجسام مختلفة من نفس الارتفاع:</p>
+
+                <div class="bg-slate-100 rounded-xl p-8 flex flex-col items-center relative overflow-hidden h-[300px] mb-4">
+                    <div id="experiment-area" class="flex gap-20">
+                        <div id="obj-apple" class="text-6xl transition-transform duration-500">🍎</div>
+                        <div id="obj-ball" class="text-6xl transition-transform duration-500">⚽</div>
+                    </div>
+                    <div class="absolute bottom-0 w-full h-6 bg-green-500 border-t-4 border-green-600"></div>
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button onclick="runExperiment()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold shadow-lg transition-transform active:scale-95">
+                        إسقاط الأجسام 🚀
+                    </button>
+                    <button onclick="resetExperiment()" class="bg-slate-500 hover:bg-slate-600 text-white px-6 py-3 rounded-full font-bold">
+                        إعادة
+                    </button>
+                </div>
+            </div>
+
+            <!-- الخطوة 5 -->
+            <div id="step5" class="step-card bg-white rounded-2xl p-6 border-2 border-transparent shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">5</span>
+                    <h3 class="text-xl font-bold">تحليل النتائج (Analysis)</h3>
+                </div>
+                <p class="text-lg">
+                    عندما قمنا بالتجربة، لاحظنا أن جميع الأجسام تسقط للأسفل بنفس الطريقة، مهما كان وزنها أو شكلها.
+                </p>
+                <div id="analysis-result" class="hidden mt-4 p-3 bg-green-50 border-r-4 border-green-500 text-green-700 font-bold">
+                    ✅ النتيجة: الملاحظة تؤكد الفرضية! الأرض تجذب كل شيء.
+                </div>
+            </div>
+
+            <!-- الخطوة 6 -->
+            <div id="step6" class="step-card bg-blue-700 text-white rounded-2xl p-8 border-2 border-blue-400 shadow-xl">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-white text-blue-700 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">6</span>
+                    <h3 class="text-2xl font-bold text-yellow-300">النظرية (Theory)</h3>
+                </div>
+                <p class="text-xl leading-relaxed">
+                    بعد سنوات من التجارب والحسابات الدقيقة، وُلدت <strong>"نظرية الجاذبية العامة"</strong>.
+                    الآن نعلم أن الجاذبية هي القوة التي تبقينا على الأرض وتجعل الكواكب تدور حول الشمس!
+                </p>
+                <div class="mt-6 flex justify-center text-8xl">🌍</div>
+            </div>
+
         </div>
 
-    </div>
+        <footer class="mt-12 text-center text-slate-500">
+            <p>صفحة تعليمية مبسطة لطلاب المدارس 🎓</p>
+        </footer>
+    </main>
 
     <script>
-        // بيانات الكواكب: الجاذبية مقارنة بالأرض، الارتفاع للقفزة، مدة القفزة، ومعلومة ممتعة
-        const planetsData = {
-            earth: {
-                id: 'earth',
-                name: 'الأرض',
-                gravity: 1.0,
-                jumpHeight: '-80px',
-                jumpDuration: '0.6s',
-                fact: "هذا هو وزنك الطبيعي، قوة جذب الأرض لك (الجاذبية) تبقيك مستقراً ولا تطير في الهواء!"
-            },
-            moon: {
-                id: 'moon',
-                name: 'القمر',
-                gravity: 0.165,
-                jumpHeight: '-250px',
-                jumpDuration: '1.5s',
-                fact: "القمر صغير جداً، لذا جاذبيته ضعيفة. أنت هنا خفيف كالريشة ويمكنك القفز عالياً جداً كالأبطال الخارقين!"
-            },
-            mars: {
-                id: 'mars',
-                name: 'المريخ',
-                gravity: 0.38,
-                jumpHeight: '-150px',
-                jumpDuration: '1s',
-                fact: "المريخ أصغر من الأرض. وزنك هنا يقل إلى أكثر من النصف بقليل. سيكون الركض والقفز هنا سهلاً وممتعاً."
-            },
-            jupiter: {
-                id: 'jupiter',
-                name: 'المشتري',
-                gravity: 2.53,
-                jumpHeight: '-20px',
-                jumpDuration: '0.3s',
-                fact: "يا إلهي! المشتري كوكب عملاق وضخم جداً، جاذبيته تسحبك بقوة كبيرة. ستشعر أنك ثقيل جداً وبالكاد تستطيع القفز!"
-            }
-        };
-
-        let currentPlanet = 'earth';
-        const astronautEl = document.getElementById('astronaut');
-        const weightInput = document.getElementById('earthWeight');
-
-        // تحديث الحسابات عند تغيير الوزن المدخل
-        weightInput.addEventListener('input', () => {
-            if(weightInput.value === '') return;
-            updateResult();
-        });
-
-        function selectPlanet(planetId) {
-            currentPlanet = planetId;
+        function runExperiment() {
+            const apple = document.getElementById('obj-apple');
+            const ball = document.getElementById('obj-ball');
+            const analysisResult = document.getElementById('analysis-result');
             
-            // إزالة التحديد عن كل الأزرار
-            document.querySelectorAll('.planet-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            // إضافة التحديد للزر المختار
-            document.getElementById(`btn-${planetId}`).classList.add('active');
-
-            updateResult();
+            apple.classList.add('animate-fall');
+            ball.classList.add('animate-fall');
             
-            // جعل رائد الفضاء يقفز تلقائياً عند تغيير الكوكب ليرى المستخدم الفرق
-            jump();
-        }
+            // تمييز الخطوة الحالية
+            document.getElementById('step4').classList.add('active');
 
-        function updateResult() {
-            const earthWeight = parseFloat(weightInput.value) || 0;
-            const data = planetsData[currentPlanet];
-            
-            // حساب الوزن الجديد
-            const newWeight = earthWeight * data.gravity;
-            
-            // تحديث النصوص في الصفحة
-            document.getElementById('planetNameDisplay').innerText = data.name;
-            document.getElementById('resultWeight').innerText = newWeight.toFixed(1); // عرض رقم عشري واحد
-            document.getElementById('planetFact').innerText = data.fact;
-
-            // تحديث متغيرات CSS الخاصة بالقفزة
-            document.documentElement.style.setProperty('--jump-height', data.jumpHeight);
-            document.documentElement.style.setProperty('--jump-duration', data.jumpDuration);
-        }
-
-        function jump() {
-            // إزالة الكلاس ثم إضافته مجدداً لإعادة تشغيل الأنيميشن
-            astronautEl.classList.remove('jumping');
-            // استخدام setTimeout صغير لضمان تسجيل المتصفح لإزالة الكلاس
             setTimeout(() => {
-                astronautEl.classList.add('jumping');
-            }, 10);
+                analysisResult.classList.remove('hidden');
+                document.getElementById('step5').classList.add('active');
+                document.getElementById('step6').classList.add('active');
+            }, 1000);
         }
 
-        // تهيئة العرض الأول
-        updateResult();
+        function resetExperiment() {
+            const apple = document.getElementById('obj-apple');
+            const ball = document.getElementById('obj-ball');
+            const analysisResult = document.getElementById('analysis-result');
+            
+            apple.classList.remove('animate-fall');
+            ball.classList.remove('animate-fall');
+            analysisResult.classList.add('hidden');
+            
+            document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
+        }
+
+        // إضافة تأثير عند التمرير
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.step-card').forEach(card => observer.observe(card));
     </script>
 </body>
 </html>
