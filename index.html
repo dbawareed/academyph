@@ -75,6 +75,20 @@
 </head>
 <body class="text-white min-h-screen flex flex-col items-center py-10 px-4 relative">
 
+    <!-- شاشة ترحيبية -->
+    <div id="welcome-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/95 backdrop-blur-md">
+        <div class="bg-slate-800 p-10 rounded-3xl border border-slate-700 max-w-lg w-full text-center shadow-2xl mx-4">
+            <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-500 mb-6">مرحباً بك في مستكشف الفضاء</h2>
+            <div class="space-y-4 text-slate-200 text-lg mb-8">
+                <p>تم انشاء هذه الصفحة لتطبيق مثال انشاء نظرية علمية من خلال gemini</p>
+                <p>تم استخدام موقع jules.google ايضا</p>
+            </div>
+            <button onclick="closeWelcomeScreen()" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 font-black py-4 px-10 rounded-2xl hover:scale-105 transition-all w-full">
+                ابدأ الاستكشاف
+            </button>
+        </div>
+    </div>
+
     <!-- خلفية النجوم (للزينة) -->
     <div class="stars text-white text-opacity-20 text-xs font-mono p-4" aria-hidden="true">
         ✦ &nbsp;&nbsp;&nbsp; ⋆ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ✦ <br><br><br>
@@ -183,6 +197,10 @@
         let currentPlanet = 'earth';
         const astronautEl = document.getElementById('astronaut');
         const weightInput = document.getElementById('earthWeight');
+
+        function closeWelcomeScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+        }
 
         // تحديث الحسابات عند تغيير الوزن المدخل
         weightInput.addEventListener('input', () => {
